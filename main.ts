@@ -13,14 +13,16 @@ export const ENTRY =
 
 // The gate (from the kit's competition.yaml): /output/entry.txt must be
 // UTF-8 text of 1 to 200 characters, not only white space. Only a valid
-// entry goes before the judge.
+// entry goes before the judge. Each check is a named predicate so the gate
+// reads as its own rule set; the behaviour is unchanged from the first
+// version (same four checks, same true/false result for every input).
 export function validateLine(line: string): boolean {
-  if (line.length < 1 || line.length > 200) return false;
-  if (line.trim().length === 0) return false; // not only white space
-  if (line.includes("\n") || line.includes("\r")) return false; // one line
+  const lengthOk = line.length >= 1 && line.length <= 200;
+  const notBlank = line.trim().length > 0; // not only white space
+  const singleLine = !line.includes("\n") && !line.includes("\r"); // one line
   // eslint-disable-next-line no-control-regex
-  if (/[\u0000-\u001f\u007f]/.test(line)) return false; // no control chars
-  return true;
+  const noControlChars = !/[\u0000-\u001f\u007f]/.test(line);
+  return lengthOk && notBlank && singleLine && noControlChars;
 }
 
 // Why this entry is the strongest choice, against the judge's brief
